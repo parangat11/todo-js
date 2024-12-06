@@ -1,2 +1,2 @@
-# template-js
-A template for future Vanilla projects
+# todo-list
+A simple todo list made with JS
