@@ -15,7 +15,8 @@ export function getProjects() {
 
 function createProject(name, deadline) {
     let serialNumber = projects.length + 1;
-    return {serialNumber, name, deadline};
+    let todos = [];
+    return {serialNumber, name, deadline, todos};
 }
 
 export function addProject(name, deadline) {
@@ -25,13 +26,18 @@ export function addProject(name, deadline) {
 
 export function deleteProject(serialNumber) {
     let newProjects = [];
-    for(let i = 0; i < projects.size(); i++) {
+    for(let i = 0; i < projects.length; i++) {
         if(projects[i].serialNumber !== serialNumber) {
             newProjects.push(projects[i]);
         }
     }
     projects = newProjects;
-    for(let i = 0; i < projects.size(); i++) {
+    for(let i = 0; i < projects.length; i++) {
         projects[i].serialNumber = i + 1;
     }
+}
+
+export function addTodo(project, name, deadline, done) {
+    const todo = createTodo(name, deadline, done);
+    project.todos.push(todo);
 }

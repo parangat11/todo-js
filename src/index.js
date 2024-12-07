@@ -6,15 +6,22 @@
 
 
 import "./styles.css"
-import {addProject, deleteProject, getProjects} from "./projects.js"
+import {addProject, addTodo, deleteProject, getProjects} from "./projects.js"
 
 const addProjectButton = document.querySelector('#plus');
 const projectDiv = document.querySelector('.projects');
 const confirmButton = document.querySelector('#conf');
-const dialogBox = document.querySelector('dialog');
+const confirmTodo = document.querySelector('#conf-todo');
+const dialogBox = document.querySelector('.add-proj');
+const todoDialog = document.querySelector('.add-todo');
+const todoNameDiv = document.querySelector('#todo-name');
+const todoDateDiv = document.querySelector('#todo-dl');
+const todoCheck = document.querySelector('#todo-check');
 const nameDiv = document.querySelector('#name');
 const dateDiv = document.querySelector('#dl');
 const showProject = document.querySelector('.show-project');
+
+let currProject = null, currDiv = null; // current project & div in which todo task is to be added.
 
 function clearProjectsInDOM() {
     projectDiv.innerHTML = "";
@@ -40,7 +47,7 @@ function addProjectsToDiv(projects) {
         projectDiv.appendChild(div);
         
         // Add event listeners to the created div for each project
-        div.addEventListener('click', (e) => clickHandlerProject(e, project));
+        div.addEventListener('click', (e) => clickHandlerProject(e, project, div));
     })
 }
 
@@ -102,15 +109,45 @@ confirmButton.addEventListener('click', (e) => {
   
 
 // Add event listeners to each project rendering each in dashboard
-function clickHandlerProject(e, project) {
+function clickHandlerProject(e, project, div) {
+    if(currDiv) {
+        currDiv.classList.remove('current-project');
+    }
+    currDiv = div;
+    currDiv.classList.add('current-project');
     const card = document.createElement('div');
+    card.classList.add('card');
+    console.log(project)
     const cardHeader = prepareHeader(project);
-    // const cardBody = prepareBody(project);
+    console.log(project)
+    const cardBody = prepareBody(project);
     card.appendChild(cardHeader);
-    // card.appendChild(cardBody);
+    card.appendChild(cardBody);
+    const addTodoButton = document.createElement('div');
+    addTodoButton.textContent = "+";
+    addTodoButton.addEventListener('click', (e) => clickHandlerAddTodo(e, project));
+    card.appendChild(addTodoButton);
     showProject.innerHTML = "";
     showProject.appendChild(card);
 }
+
+function clickHandlerAddTodo(e, project) {
+    currProject = project;
+    todoDialog.showModal();
+}
+
+confirmTodo.addEventListener('click', (e) => {
+    e.preventDefault();
+    const nameOfTodo = todoNameDiv.value;
+    const deadlineOfTodo = todoDateDiv.value;
+    const doneTodo = todoCheck.checked ? true : false;
+    addTodo(currProject, nameOfTodo, deadlineOfTodo, doneTodo);
+    todoNameDiv.value = null;
+    todoDateDiv.value = null;
+    todoCheck.value = false;
+    currDiv.click();
+    todoDialog.close();
+})
 
 function prepareHeader(project) {
     const cardHeader = document.createElement('div');
@@ -120,11 +157,17 @@ function prepareHeader(project) {
     return cardHeader;
 }
 
-// function prepareBody(project) {
-//     const cardBody = document.createElement('div');
-//     for(let i = 0; i < project.todo.length; i++) {
-//         const todoTask = document.createElement('div');
-//         todoTask.textContent += project.todo[i].
-//     }
-//     return cardBody;
-// }
+function prepareBody(project) {
+    const cardBody = document.createElement('div');
+    console.log(project.todos)
+    for(let i = 0; i < project.todos.length; i++) {
+        const todoTask = document.createElement('div');
+        for(const prop in project.todos[i]) {
+            const newDiv = document.createElement('div');
+            newDiv.textContent += project.todos[i][prop];
+            todoTask.appendChild(newDiv);
+        }
+        cardBody.appendChild(todoTask);
+    }
+    return cardBody;
+}

@@ -19,13 +19,24 @@
         </div>
         <div class="show-project"></div>
     </div>
-    <dialog>
+    <dialog class="add-proj">
         <form>
             <label for="name">Project Name:</label>
             <input type="text" id="name">
             <label for="dl">Deadline:</label>
             <input type="date" id="dl">
             <button type="submit" id="conf" value>Submit</button>
+        </form>
+    </dialog>
+    <dialog class="add-todo">
+        <form>
+            <label for="todo-name">Task:</label>
+            <input type="text" id="todo-name">
+            <label for="todo-dl">Deadline:</label>
+            <input type="date" id="todo-dl">
+            <label for="todo-check">Task done:</label>
+            <input type="checkbox" id="todo-check">
+            <button type="submit" id="conf-todo" value>Submit</button>
         </form>
     </dialog>
 </body>
