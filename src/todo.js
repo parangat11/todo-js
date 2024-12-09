@@ -1,3 +1,7 @@
-export function createTodo(name, deadline, done) {
-    return {name, deadline, done};
+export function createTodo(name, done) {
+    return {name, done};
+}
+
+export function toggleTodo(todo) {
+    todo.done = !todo.done;
 }

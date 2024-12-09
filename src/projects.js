@@ -1,12 +1,6 @@
-import {createTodo, changeNumber} from "./todo.js" 
+import {createTodo, toggleTodo} from "./todo.js" 
 
 let projects = [
-    {
-        serialNumber: 1,
-        name: "Learning backend",
-        deadline: "31/12/2024",
-        todos: [],
-    },
 ];
 
 export function getProjects() {
@@ -21,23 +15,18 @@ function createProject(name, deadline) {
 
 export function addProject(name, deadline) {
     const newProject = createProject(name, deadline);
+    const div = document.querySelector('#empty-list');
+    if(div) {
+        div.remove();
+    }
     projects.push(newProject);
 }
 
-export function deleteProject(serialNumber) {
-    let newProjects = [];
-    for(let i = 0; i < projects.length; i++) {
-        if(projects[i].serialNumber !== serialNumber) {
-            newProjects.push(projects[i]);
-        }
-    }
-    projects = newProjects;
-    for(let i = 0; i < projects.length; i++) {
-        projects[i].serialNumber = i + 1;
-    }
+export function addTodo(project, name, done) {
+    const todo = createTodo(name, done);
+    project.todos.push(todo);
 }
 
-export function addTodo(project, name, deadline, done) {
-    const todo = createTodo(name, deadline, done);
-    project.todos.push(todo);
+export function toggleTodoInProject(todo) {
+    toggleTodo(todo);
 }

@@ -6,7 +6,8 @@
 
 
 import "./styles.css"
-import {addProject, addTodo, deleteProject, getProjects} from "./projects.js"
+import {addProject, addTodo, getProjects, toggleTodoInProject} from "./projects.js"
+import { toggleTodo } from "./todo.js";
 
 const addProjectButton = document.querySelector('#plus');
 const projectDiv = document.querySelector('.projects');
@@ -15,7 +16,6 @@ const confirmTodo = document.querySelector('#conf-todo');
 const dialogBox = document.querySelector('.add-proj');
 const todoDialog = document.querySelector('.add-todo');
 const todoNameDiv = document.querySelector('#todo-name');
-const todoDateDiv = document.querySelector('#todo-dl');
 const todoCheck = document.querySelector('#todo-check');
 const nameDiv = document.querySelector('#name');
 const dateDiv = document.querySelector('#dl');
@@ -33,21 +33,31 @@ let correspondingName = {
     deadline: "Deadline: ",
 }
 
+function addProjectToDiv(project) {
+    const div = document.createElement('div');
+    div.classList.add('project');
+    for(const property in project) {
+        if(property==="todos")
+            continue;
+        const childDiv = document.createElement('div');
+        childDiv.textContent += correspondingName[property] + String(project[property]);
+        div.appendChild(childDiv);
+    }
+    projectDiv.appendChild(div);
+    
+    // Add event listeners to the created div for each project
+    div.addEventListener('click', (e) => clickHandlerProject(e, project, div));
+}
+
 function addProjectsToDiv(projects) {
-    projects.forEach((project) => {
+    if(projects.length === 0) {
         const div = document.createElement('div');
-        div.classList.add('project');
-        for(const property in project) {
-            if(property==="todos")
-                continue;
-            const childDiv = document.createElement('div');
-            childDiv.textContent += correspondingName[property] + String(project[property]);
-            div.appendChild(childDiv);
-        }
+        div.setAttribute("id", "empty-list");
+        div.textContent += "Add projects!";
         projectDiv.appendChild(div);
-        
-        // Add event listeners to the created div for each project
-        div.addEventListener('click', (e) => clickHandlerProject(e, project, div));
+    }
+    projects.forEach((project) => {
+        addProjectToDiv(project);
     })
 }
 
@@ -56,11 +66,16 @@ function renderProjectsInDOM() {
 
     const projects = getProjects();
     addProjectsToDiv(projects);
-
     projectDiv.appendChild(addProjectButton);
 }
 
 renderProjectsInDOM();
+
+function renderNewProject(project) {
+    const throwAwayPlus = projectDiv.removeChild(addProjectButton);
+    addProjectToDiv(project);
+    projectDiv.appendChild(throwAwayPlus);
+}
 
 addProjectButton.addEventListener('click', (e) => {
     // console.log(e);
@@ -77,7 +92,9 @@ confirmButton.addEventListener('click', (e) => {
     addProject(nameDiv.value, dateDiv.value);
     nameDiv.value = null;
     dateDiv.value = null;
-    renderProjectsInDOM();
+    const projects = getProjects();
+    const project = projects[projects.length - 1];
+    renderNewProject(project);
     dialogBox.close();
 })
 
@@ -123,7 +140,8 @@ function clickHandlerProject(e, project, div) {
     const cardBody = prepareBody(project);
     card.appendChild(cardHeader);
     card.appendChild(cardBody);
-    const addTodoButton = document.createElement('div');
+    const addTodoButton = document.createElement('button');
+    addTodoButton.classList.add('add-todo-button');
     addTodoButton.textContent = "+";
     addTodoButton.addEventListener('click', (e) => clickHandlerAddTodo(e, project));
     card.appendChild(addTodoButton);
@@ -139,21 +157,22 @@ function clickHandlerAddTodo(e, project) {
 confirmTodo.addEventListener('click', (e) => {
     e.preventDefault();
     const nameOfTodo = todoNameDiv.value;
-    const deadlineOfTodo = todoDateDiv.value;
     const doneTodo = todoCheck.checked ? true : false;
-    addTodo(currProject, nameOfTodo, deadlineOfTodo, doneTodo);
+    addTodo(currProject, nameOfTodo, doneTodo);
     todoNameDiv.value = null;
-    todoDateDiv.value = null;
-    todoCheck.value = false;
+    todoCheck.checked = false;
     currDiv.click();
     todoDialog.close();
 })
 
 function prepareHeader(project) {
     const cardHeader = document.createElement('div');
-    cardHeader.textContent += project.name;
-    cardHeader.textContent += ' ';
-    cardHeader.textContent += project.deadline;
+    const projectName = document.createElement('div');
+    const projectDeadline = document.createElement('div');
+    projectName.textContent += project.name;
+    projectDeadline.textContent += project.deadline;
+    cardHeader.appendChild(projectName);
+    cardHeader.appendChild(projectDeadline);
     return cardHeader;
 }
 
@@ -162,11 +181,34 @@ function prepareBody(project) {
     console.log(project.todos)
     for(let i = 0; i < project.todos.length; i++) {
         const todoTask = document.createElement('div');
+        todoTask.classList.add('todo-task');
+        todoTask.textContent += `${i + 1}.`;
         for(const prop in project.todos[i]) {
+            if(prop === "done") {
+                continue;
+            }
             const newDiv = document.createElement('div');
+            newDiv.classList.add("todo-task-text");
             newDiv.textContent += project.todos[i][prop];
             todoTask.appendChild(newDiv);
         }
+        const checkBoxOfTodo = document.createElement("input");
+        checkBoxOfTodo.setAttribute("type", "checkbox");
+        checkBoxOfTodo.classList.add("checkbox-todo");
+        checkBoxOfTodo.checked = project.todos[i]["done"];
+        if(checkBoxOfTodo.checked) {
+            todoTask.classList.add("cut-todo-task");
+        }
+        checkBoxOfTodo.addEventListener("click", (e) => {
+            toggleTodo(project.todos[i]);
+            if(checkBoxOfTodo.checked) {
+                todoTask.classList.add("cut-todo-task");
+            }
+            else {
+                todoTask.classList.remove("cut-todo-task");
+            }
+        })
+        todoTask.appendChild(checkBoxOfTodo);
         cardBody.appendChild(todoTask);
     }
     return cardBody;
