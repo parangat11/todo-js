@@ -2,12 +2,12 @@
     1. Use index.js to render DOM elements.
     2. Make sure the logic is handled only by projects/todo and rendering is done
     only by index module.
+    3. Store the data (projects) locally everytime a project/todo is modified.
 */
 
 
 import "./styles.css"
-import {addProject, addTodo, getProjects, toggleTodoInProject} from "./projects.js"
-import { toggleTodo } from "./todo.js";
+import {addProject, addTodo, getProjects, setProjects, toggleTodoInProject} from "./projects.js"
 
 const addProjectButton = document.querySelector('#plus');
 const projectDiv = document.querySelector('.projects');
@@ -33,6 +33,12 @@ let correspondingName = {
     deadline: "Deadline: ",
 }
 
+if(localStorage.getItem("projectSave")) {
+    const str = localStorage.getItem("projectSave");
+    const newObj = JSON.parse(str);
+    setProjects(newObj);
+}
+
 function addProjectToDiv(project) {
     const div = document.createElement('div');
     div.classList.add('project');
@@ -56,6 +62,7 @@ function addProjectsToDiv(projects) {
         div.textContent += "Add projects!";
         projectDiv.appendChild(div);
     }
+    console.log(projects);
     projects.forEach((project) => {
         addProjectToDiv(project);
     })
@@ -66,6 +73,7 @@ function renderProjectsInDOM() {
 
     const projects = getProjects();
     addProjectsToDiv(projects);
+
     projectDiv.appendChild(addProjectButton);
 }
 
@@ -200,7 +208,7 @@ function prepareBody(project) {
             todoTask.classList.add("cut-todo-task");
         }
         checkBoxOfTodo.addEventListener("click", (e) => {
-            toggleTodo(project.todos[i]);
+            toggleTodoInProject(project.todos[i]);
             if(checkBoxOfTodo.checked) {
                 todoTask.classList.add("cut-todo-task");
             }

@@ -7,6 +7,10 @@ export function getProjects() {
     return projects;
 }
 
+export function setProjects(localProjects) {
+    projects = localProjects;
+}
+
 function createProject(name, deadline) {
     let serialNumber = projects.length + 1;
     let todos = [];
@@ -20,13 +24,19 @@ export function addProject(name, deadline) {
         div.remove();
     }
     projects.push(newProject);
+    const projString = JSON.stringify(projects);
+    localStorage.setItem("projectSave", projString);
 }
 
 export function addTodo(project, name, done) {
     const todo = createTodo(name, done);
     project.todos.push(todo);
+    const projString = JSON.stringify(projects);
+    localStorage.setItem("projectSave", projString);
 }
 
 export function toggleTodoInProject(todo) {
     toggleTodo(todo);
+    const projString = JSON.stringify(projects);
+    localStorage.setItem("projectSave", projString);
 }
