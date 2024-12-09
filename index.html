@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+<script defer src="main.js"></script></head>
+<body>
+    <header>
+        <div id="logo">
+            <img src="a50486be32159ebc36de.svg" alt="todo-svg" id="icon">
+            <div>
+                Todo List
+            </div>
+        </div>
+    </header>
+    <div class="dashboard">
+        <div class="left">
+            <div class="projects">
+                <div id="add-proj"><button id="plus">+</button></div>
+            </div>
+        </div>
+        <div class="show-project"></div>
+    </div>
+    <dialog class="add-proj">
+        <form>
+            <label for="name">Project Name:</label>
+            <input type="text" id="name">
+            <label for="dl">Deadline:</label>
+            <input type="date" id="dl">
+            <button type="submit" id="conf" value>Submit</button>
+        </form>
+    </dialog>
+    <dialog class="add-todo">
+        <form>
+            <label for="todo-name">Task:</label>
+            <input type="text" id="todo-name">
+            <label for="todo-check">Task done:</label>
+            <input type="checkbox" id="todo-check">
+            <button type="submit" id="conf-todo" value>Submit</button>
+        </form>
+    </dialog>
+</body>
+</html>
